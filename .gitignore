@@ -1,3 +1,6 @@
-build/
 .envrc
 .direnv/
+build*/
+compile_commands.json
+__pycache__/
+*.pyc

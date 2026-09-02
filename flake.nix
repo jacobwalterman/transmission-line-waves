@@ -7,12 +7,13 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      pythonEnv = pkgs.python3.withPackages (ps: [ ps.numpy ps.matplotlib ]);
+      pythonEnv = pkgs.python3.withPackages (ps: [ ps.numpy ps.matplotlib ps.nanobind ]);
     in {
       devShells.${system}.default = pkgs.mkShell {
         buildInputs = [
           pkgs.cmake
           pkgs.gcc
+          pkgs.eigen
           pythonEnv
         ];
       };

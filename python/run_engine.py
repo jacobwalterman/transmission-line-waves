@@ -1,17 +1,39 @@
-import subprocess
+import sys
+import numpy as np
+import matplotlib.pyplot as plt
 from pathlib import Path
 
-EXE_PATH = Path(__file__).resolve().parent.parent / "build" / "coupled_piezo_heat"
-def run_engine(n=10, freq=1.0, exe_path=EXE_PATH):
-    result = subprocess.run(
-        [exe_path, "--n", str(n), "--freq", str(freq)],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    values = [float(line) for line in result.stdout.strip().splitlines()]
-    return values
+BUILD_PATH = Path(__file__).resolve().parent.parent / "build"
+# TODO: replace with scikit-build-core
+sys.path.insert(0, str(BUILD_PATH))
+
+import _coupled_piezo_heat
+
+def run_engine(n, t):
+    return _coupled_piezo_heat.evaluate_solution(n, t)
 
 if __name__ == "__main__":
-    values = run_engine(n=20, freq=2.0)
-    print(values)
+    n = 10
+    t = 0;
+    values = np.array(run_engine(n, t))
+
+    values = values.real
+
+    half = len(values) // 2
+    positions = values[:half]
+    velocities = values[half:]
+
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 6))
+
+    ax1.plot(positions, marker="o")
+    ax1.set_title("Positions")
+    ax1.set_xlabel("Grid index")
+    ax1.set_ylabel("Position")
+
+    ax2.plot(velocities, marker="o", color="tab:orange")
+    ax2.set_title("Velocities")
+    ax2.set_xlabel("Grid index")
+    ax2.set_ylabel("Velocity")
+
+    plt.tight_layout()
+    plt.show()
