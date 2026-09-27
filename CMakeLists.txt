@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(coupled_piezo_heat)
+project(transmission_line_waves)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -27,7 +27,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Eigen3 REQUIRED)
 
-add_executable(coupled_piezo_heat src/main.cpp)
-target_link_libraries(coupled_piezo_heat PRIVATE Eigen3::Eigen)
-nanobind_add_module(_coupled_piezo_heat src/bindings.cpp src/solver.cpp src/transmission_line_solver.cpp)
-target_link_libraries(_coupled_piezo_heat PRIVATE Eigen3::Eigen)
+add_executable(transmission_line_waves src/main.cpp)
+target_link_libraries(transmission_line_waves PRIVATE Eigen3::Eigen)
+nanobind_add_module(_transmission_line_waves src/bindings.cpp src/solver.cpp src/transmission_line_solver.cpp)
+target_link_libraries(_transmission_line_waves PRIVATE Eigen3::Eigen)

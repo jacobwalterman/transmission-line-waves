@@ -11,7 +11,7 @@ from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (registers 3d projection)
 BUILD_PATH = Path(__file__).resolve().parent.parent / "build"
 sys.path.insert(0, str(BUILD_PATH))
 
-import _coupled_piezo_heat
+import _transmission_line_waves
 
 
 def create_box(grids, l_first, l_last):
@@ -176,7 +176,7 @@ def run(init_cond="box", out_path="transmission_line.png"):
     w_profiles, v_profiles, energies = [], [], []
     for t in times:
         state = np.array(
-            _coupled_piezo_heat.evaluate_transmission_line_wave(
+            _transmission_line_waves.evaluate_transmission_line_wave(
                 n1, n2, n3, n4, h1, h2, h3, h4, c1, c2, c3, c4, k1, k2, k3, k4,
                 initial_conditions, t,
             )

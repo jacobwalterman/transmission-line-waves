@@ -1,5 +1,5 @@
 {
-  description = "coupled piezo heat dev environment";
+  description = "transmission line waves dev environment";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 

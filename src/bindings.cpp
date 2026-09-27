@@ -5,7 +5,7 @@
 
 namespace nb = nanobind;
 
-NB_MODULE(_coupled_piezo_heat, m) {
+NB_MODULE(_transmission_line_waves, m) {
   m.def("evaluate_solution", &evaluate_solution, nb::arg("n"), nb::arg("t"),
         "Evaluate the solution vector at time t");
   m.def("build_transmission_line_A", &build_transmission_line_A,

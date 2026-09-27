@@ -7,10 +7,10 @@ BUILD_PATH = Path(__file__).resolve().parent.parent / "build"
 # TODO: replace with scikit-build-core
 sys.path.insert(0, str(BUILD_PATH))
 
-import _coupled_piezo_heat
+import _transmission_line_waves
 
 def run_engine(n, t):
-    return _coupled_piezo_heat.evaluate_solution(n, t)
+    return _transmission_line_waves.evaluate_solution(n, t)
 
 if __name__ == "__main__":
     n = 10
