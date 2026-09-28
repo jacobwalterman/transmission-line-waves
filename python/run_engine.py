@@ -1,11 +1,5 @@
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
-from pathlib import Path
-
-BUILD_PATH = Path(__file__).resolve().parent.parent / "build"
-# TODO: replace with scikit-build-core
-sys.path.insert(0, str(BUILD_PATH))
 
 import _transmission_line_waves
 

@@ -1,0 +1,16 @@
+.git
+.gitignore
+.direnv/
+.envrc
+.cache/
+build/
+build-debug/
+compile_commands.json
+*.png
+__pycache__/
+*.pyc
+.claude/
+flake.nix
+flake.lock
+Makefile
+python/run_engine.py

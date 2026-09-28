@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 
 import numpy as np
 import matplotlib
@@ -7,9 +6,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (registers 3d projection)
-
-BUILD_PATH = Path(__file__).resolve().parent.parent / "build"
-sys.path.insert(0, str(BUILD_PATH))
 
 import _transmission_line_waves
 

@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.15...4.4)
 project(transmission_line_waves)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
+find_package(Python 3.9 REQUIRED COMPONENTS Interpreter Development.Module)
 
 execute_process(
   COMMAND "${Python_EXECUTABLE}" -c "import nanobind; print(nanobind.cmake_dir())"
@@ -25,9 +25,27 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3 3.4 QUIET)
+if(NOT Eigen3_FOUND)
+  include(FetchContent)
+  set(EIGEN_BUILD_DOC OFF CACHE BOOL "" FORCE)
+  set(EIGEN_BUILD_TESTING OFF CACHE BOOL "" FORCE)
+  set(EIGEN_BUILD_PKGCONFIG OFF CACHE BOOL "" FORCE)
+  set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+  FetchContent_Declare(
+    eigen
+    GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+    GIT_TAG        3.4.0
+    GIT_SHALLOW    TRUE
+  )
+  FetchContent_MakeAvailable(eigen)
+endif()
 
 add_executable(transmission_line_waves src/main.cpp)
 target_link_libraries(transmission_line_waves PRIVATE Eigen3::Eigen)
 nanobind_add_module(_transmission_line_waves src/bindings.cpp src/solver.cpp src/transmission_line_solver.cpp)
 target_link_libraries(_transmission_line_waves PRIVATE Eigen3::Eigen)
+
+install(TARGETS _transmission_line_waves
+        LIBRARY DESTINATION .
+        RUNTIME DESTINATION .)
