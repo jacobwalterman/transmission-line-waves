@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /src
 COPY pyproject.toml CMakeLists.txt ./
 COPY src ./src
+COPY python/tlw ./python/tlw
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip wheel --no-cache-dir -w /wheels .
@@ -22,13 +23,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libstdc++6 \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR /out
 
 COPY --from=builder /wheels /wheels
 RUN pip install --no-cache-dir --no-index --find-links=/wheels transmission_line_waves \
     && rm -rf /wheels
 
-COPY python/run_transmission_line.py ./run_transmission_line.py
-
-ENTRYPOINT ["python", "run_transmission_line.py"]
-CMD ["box", "transmission_line.png"]
+ENTRYPOINT ["tlw"]
+CMD ["box"]

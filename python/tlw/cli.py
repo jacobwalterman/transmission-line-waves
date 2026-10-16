@@ -1,6 +1,7 @@
 import argparse
 import tomllib
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 import matplotlib
@@ -245,26 +246,17 @@ def run_spectrum(config, out_path="eigenvalues.png"):
     print(f"wrote {out_path}")
 
 
+DEFAULT_CONFIG = Path(__file__).parent / "params.toml"
+
+
 def main():
-    parser = argparse.ArgumentParser(prog="tlw")
-    parser.add_argument("--config", default="params.toml", help="path to params TOML file")
-    sub = parser.add_subparsers(dest="command", required=True)
-
-    demo = sub.add_parser("demo", help="run the plotting demo")
-    demo.add_argument("--init", default="box", choices=["box", "flat", "sin"],
-                      help="initial condition name")
-    demo.add_argument("--out", default="transmission_line.png")
-
-    spectrum = sub.add_parser("spectrum", help="plot the eigenvalues")
-    spectrum.add_argument("--out", default="eigenvalues.png")
-
+    parser = argparse.ArgumentParser(prog="tlw", description="Transmission-line wave solver")
+    parser.add_argument("init", nargs="?", default="box", choices=["box", "flat", "sin"],
+                        help="initial condition (default: box)")
+    parser.add_argument("--out", default="transmission_line.png", help="output PNG path")
+    parser.add_argument("--config", default=None, help="params TOML file (default: built-in)")
     args = parser.parse_args()
-    config = load_config(args.config)
-
-    if args.command == "demo":
-        run_demo(config, args.init, args.out)
-    elif args.command == "spectrum":
-        run_spectrum(config, args.out)
+    run_demo(load_config(args.config or DEFAULT_CONFIG), args.init, args.out)
 
 
 if __name__ == "__main__":

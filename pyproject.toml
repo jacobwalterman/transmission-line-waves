@@ -12,8 +12,11 @@ dependencies = [
     "matplotlib",
 ]
 
+[project.scripts]
+tlw = "tlw.cli:main"
+
 [tool.scikit-build]
 minimum-version = "0.10"
 
 [tool.scikit-build.wheel]
-packages = []
+packages = ["python/tlw"]
