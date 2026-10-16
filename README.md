@@ -1,57 +1,74 @@
 # transmission-line-waves
 
-A nanobind-wrapped C++ solver for a 4-segment transmission-line wave equation, with Python driver scripts for plotting.
+A nanobind-wrapped C++ solver for a 4-segment transmission-line wave equation, with a Python driver script for plotting.
+
+![Example output](docs/example.png)
+
+## Quick start (Docker)
+
+You only need Docker. Run this in any folder:
+
+```
+docker run --rm -v "$PWD:/out" ghcr.io/jacobwalterman/transmission-line-waves sin /out/sin.png
+```
+
+This saves `sin.png` in your current folder. The first argument is the initial condition (`box`, `flat`, or `sin`) and the second is where to save the plot.
+
+On Fedora or other SELinux systems, add `:z` to the volume: `-v "$PWD:/out:z"`.
+If your Docker setup needs it, put `sudo` in front.
+
+## Install with pip (no Docker)
+
+Needs Python 3.10+, a C++ compiler, and CMake.
+
+```
+pip install git+https://github.com/jacobwalterman/transmission-line-waves
+python python/run_transmission_line.py [box|flat|sin] [out_path.png]
+```
+
+The script defaults to `box` and `transmission_line.png`.
 
 ## Local development (Nix)
 
 Requires [Nix](https://nixos.org/) and [direnv](https://direnv.net/).
 
-```bash
+```
 direnv allow
 ```
 
-This enters the flake's dev shell (compiler, CMake, Eigen, Python) and auto-creates/activates a project-local venv via direnv's layout python3 — no manual `source .venv/bin/activate` needed. Then, once per checkout (and again after changing any C++ source):
+This enters the flake's dev shell (compiler, CMake, Eigen, Python) and creates and activates a project-local venv automatically. Then, once per checkout and again after changing any C++ source:
 
-```bash
+```
 pip install .
 ```
 
-Run the solver:
+Run the solver the same way as above:
 
-```bash
+```
 python python/run_transmission_line.py [box|flat|sin] [out_path.png]
-# defaults to "box" and transmission_line.png
 ```
 
-`python/run_engine.py` is a separate, interactive (`plt.show()`) demo script for the simpler single-segment solver — local-only, not part of the Docker image.
+## Building the Docker image yourself
 
-## Docker
-
-Build:
-
-```bash
+```
 docker build -t transmission-line-waves:dev .
+docker run --rm -v "$PWD:/out:z" transmission-line-waves:dev box /out/box.png
 ```
 
-Run and retrieve the output PNG via `docker cp` (avoids bind-mount permission issues, e.g. SELinux on Fedora):
+## Troubleshooting
 
-```bash
-sudo docker run --name tlw-run transmission-line-waves:dev
-sudo docker cp tlw-run:/app/transmission_line.png ./transmission_line.png
-sudo docker rm tlw-run
+If the bind mount gives you permission errors, copy the output out of the container instead:
+
+```
+docker run --name tlw-run transmission-line-waves:dev
+docker cp tlw-run:/app/transmission_line.png ./transmission_line.png
+docker rm tlw-run
 ```
 
-Override the initial condition / output filename via CMD args:
+To change the initial condition or filename this way:
 
-```bash
-sudo docker run --name tlw-run transmission-line-waves:dev sin /app/custom.png
-sudo docker cp tlw-run:/app/custom.png ./custom.png
-sudo docker rm tlw-run
 ```
-
-If you'd rather use a live bind mount instead of `docker cp`, add `:z` on SELinux-enforcing systems (e.g. Fedora) so the container can actually write to it:
-
-```bash
-mkdir -p /tmp/out
-sudo docker run --rm -v /tmp/out:/app/out:z transmission-line-waves:dev box /app/out/box.png
+docker run --name tlw-run transmission-line-waves:dev sin /app/custom.png
+docker cp tlw-run:/app/custom.png ./custom.png
+docker rm tlw-run
 ```
