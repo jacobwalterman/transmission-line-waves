@@ -157,7 +157,7 @@ def solve(config, init_cond, times):
     es = engine.decompose(config.params)
     coefficients = engine.coefficients(es, initial_conditions)
     # evolve() drops modes, so t=0 is returned exactly rather than reconstructed.
-    return [initial_conditions if t == 0 else engine.evolve(es, coefficients, t) for t in times]
+    return (es.sortedEigenvalues(), [initial_conditions if t == 0 else engine.evolve(es, coefficients, t) for t in times])
 
 
 # -------------------------------------------------------------- plotting
@@ -183,23 +183,26 @@ def plot_eigenvalues(eigenvalues, drop=4, out_path="eigenvalues.png"):
     drop: number of trailing modes that evolve() discards
     """
     ev = np.asarray(eigenvalues)
-    kept = ev[:len(ev) - drop] if drop > 0 else ev
-    dropped = ev[len(ev) - drop:] if drop > 0 else ev[:0]
 
     fig, ax = plt.subplots(figsize=(7, 5))
-    ax.scatter(kept.real, kept.imag, s=12, label="kept")
-    if len(dropped):
-        ax.scatter(dropped.real, dropped.imag, s=30, marker="x",
-                   color="red", label=f"dropped ({drop})")
+
+    kept = ev[:len(ev) - drop] if drop > 0 else ev
+    dropped = ev[len(ev) - drop:] if drop > 0 else ev[:0]
+ 
+    fig, ax = plt.subplots(figsize=(7, 5))
+    ax.scatter(kept.real, kept.imag, s=12, label="eigenvalues")
 
     ax.axvline(0, color="gray", linewidth=0.8)
     ax.set_xlabel("Re(λ)")
     ax.set_ylabel("Im(λ)")
     ax.set_title("Eigenvalues in the complex plane")
     ax.legend()
-    ax.set_xlim(left=kept.real.min() * 0.05, right=0.05 * abs(kept.real.min()))
+    
+    ax.set_xlim(left=ev.real.min() * 0.01, right=0)
+    ax.set_ylim(bottom=ev.imag.min() * 0.1, top=0.1 * abs(ev.imag.max()))
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
+    print(f"wrote {out_path}")
     plt.close(fig)
 
 
@@ -214,7 +217,8 @@ def run_demo(config, init_cond="box", out_path="transmission_line.png"):
     x_v = np.concatenate([g1v, g2v, [g3v[0]], g3v, g4v])
 
     w_profiles, v_profiles, energies = [], [], []
-    for state in solve(config, init_cond, times):
+    eigenvalues, states = solve(config, init_cond, times)
+    for state in states:
         sections = split_state(state, params)
         w_profiles.append(np.concatenate(sections[:4]))
         v_profiles.append(np.concatenate(sections[4:]))
@@ -222,11 +226,13 @@ def run_demo(config, init_cond="box", out_path="transmission_line.png"):
 
     normalized_energy = np.array(energies) / energies[0]
 
+    plot_eigenvalues(eigenvalues)
+
     fig = plt.figure(figsize=(19, 6))
     ax1 = fig.add_subplot(1, 3, 1, projection="3d")
     ax2 = fig.add_subplot(1, 3, 2, projection="3d")
     ax3 = fig.add_subplot(1, 3, 3)
-
+    
     plot_surface_3d(ax1, x_w, times, np.array(w_profiles), "w1 through w4", "coolwarm")
     plot_surface_3d(ax2, x_v, times, np.array(v_profiles), "v1 through v4", "coolwarm")
 
