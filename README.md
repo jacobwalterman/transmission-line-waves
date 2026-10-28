@@ -31,7 +31,7 @@ The `:z` is for SELinux systems like Fedora and is harmless elsewhere. Add `sudo
 Needs Python 3.12+, a C++ compiler, and CMake.
 
 ```
-pip install git+https://github.com/<your-github-username>/transmission-line-waves
+pip install git+https://github.com/jacobwalterman/transmission-line-waves
 ```
 
 or, from a checkout of this repo:
